@@ -1,0 +1,314 @@
+tables:
+  companies:
+    description: "Mining companies operating multiple quarries."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      name:
+        type: string(255)
+        nullable: false
+      registration_number:
+        type: string(50)
+        nullable: true
+      country:
+        type: string(100)
+        nullable: true
+      city:
+        type: string(100)
+        nullable: true
+      status:
+        type: string(20)
+        nullable: false
+        default: "active"
+    indexes:
+      - [name]
+
+  quarries:
+    description: "Quarries where vehicles operate."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      company_id:
+        type: integer
+        nullable: false
+        foreign_key: companies.id
+      name:
+        type: string(255)
+        nullable: false
+      location:
+        type: string(255)
+        nullable: true
+      status:
+        type: string(20)
+        nullable: false
+        default: "active"
+    indexes:
+      - [company_id]
+      - [status]
+
+  vehicle_types:
+    description: "Reference table with available vehicle types."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      name:
+        type: string(100)
+        nullable: false
+      description:
+        type: text
+        nullable: true
+      max_speed_kmh:
+        type: integer
+        nullable: true
+      max_payload_tons:
+        type: float
+        nullable: true
+
+  vehicles:
+    description: "Physical vehicles working in quarries."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      company_id:
+        type: integer
+        nullable: false
+        foreign_key: companies.id
+      vehicle_type_id:
+        type: integer
+        nullable: false
+        foreign_key: vehicle_types.id
+      current_quarry_id:
+        type: integer
+        nullable: true
+        foreign_key: quarries.id
+      plate_number:
+        type: string(50)
+        nullable: false
+        unique: true
+      vin:
+        type: string(100)
+        nullable: true
+        unique: true
+      status:
+        type: string(20)
+        nullable: false
+        default: "active"
+    indexes:
+      - [company_id]
+      - [current_quarry_id]
+      - [status]
+
+  drivers:
+    description: "Drivers who operate vehicles."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      company_id:
+        type: integer
+        nullable: false
+        foreign_key: companies.id
+      full_name:
+        type: string(255)
+        nullable: false
+      license_number:
+        type: string(100)
+        nullable: true
+      license_category:
+        type: string(10)
+        nullable: true
+      status:
+        type: string(20)
+        nullable: false
+        default: "active"
+      date_of_birth:
+        type: date
+        nullable: true
+    indexes:
+      - [company_id]
+      - [status]
+
+  driver_assignments:
+    description: "History of which quarry a driver belongs to."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      driver_id:
+        type: integer
+        nullable: false
+        foreign_key: drivers.id
+      quarry_id:
+        type: integer
+        nullable: false
+        foreign_key: quarries.id
+      start_date:
+        type: date
+        nullable: false
+      end_date:
+        type: date
+        nullable: true
+    indexes:
+      - [driver_id]
+      - [quarry_id]
+
+  shifts:
+    description: "Work shifts in each quarry."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      quarry_id:
+        type: integer
+        nullable: false
+        foreign_key: quarries.id
+      shift_date:
+        type: date
+        nullable: false
+      start_time:
+        type: time
+        nullable: false
+      end_time:
+        type: time
+        nullable: false
+    indexes:
+      - [quarry_id, shift_date]
+
+  medical_checks:
+    description: "Pre-shift medical checks for drivers."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      driver_id:
+        type: integer
+        nullable: false
+        foreign_key: drivers.id
+      shift_id:
+        type: integer
+        nullable: false
+        foreign_key: shifts.id
+      check_time:
+        type: datetime
+        nullable: false
+      result:
+        type: string(20)
+        nullable: false
+      heart_rate:
+        type: integer
+        nullable: true
+      blood_pressure:
+        type: string(20)
+        nullable: true
+      notes:
+        type: text
+        nullable: true
+    indexes:
+      - [driver_id]
+      - [shift_id]
+      - [result]
+
+  driver_health_statuses:
+    description: "Reference table for driver health statuses."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      code:
+        type: string(50)
+        nullable: false
+        unique: true
+      description:
+        type: string(255)
+        nullable: true
+
+  vehicle_shift_assignments:
+    description: "Which driver used which vehicle in which shift and quarry."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      vehicle_id:
+        type: integer
+        nullable: false
+        foreign_key: vehicles.id
+      driver_id:
+        type: integer
+        nullable: false
+        foreign_key: drivers.id
+      shift_id:
+        type: integer
+        nullable: false
+        foreign_key: shifts.id
+      quarry_id:
+        type: integer
+        nullable: false
+        foreign_key: quarries.id
+      start_time:
+        type: datetime
+        nullable: false
+      end_time:
+        type: datetime
+        nullable: true
+    indexes:
+      - [vehicle_id]
+      - [driver_id]
+      - [shift_id]
+      - [quarry_id]
+
+  telematics_readings:
+    description: "5-minute sensor data from vehicles."
+    columns:
+      id:
+        type: integer
+        primary_key: true
+        autoincrement: true
+      vehicle_id:
+        type: integer
+        nullable: false
+        foreign_key: vehicles.id
+      driver_id:
+        type: integer
+        nullable: true
+        foreign_key: drivers.id
+      shift_id:
+        type: integer
+        nullable: true
+        foreign_key: shifts.id
+      timestamp:
+        type: datetime
+        nullable: false
+      latitude:
+        type: float
+        nullable: true
+      longitude:
+        type: float
+        nullable: true
+      speed_kmh:
+        type: float
+        nullable: true
+      driver_health_status_id:
+        type: integer
+        nullable: true
+        foreign_key: driver_health_statuses.id
+      raw_payload:
+        type: text
+        nullable: true
+    indexes:
+      - [vehicle_id, timestamp]
+      - [driver_id, timestamp]
+      - [shift_id, timestamp]

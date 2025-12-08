@@ -1,0 +1,16 @@
+COMMON: &common
+  DEBUG: False
+  SQLALCHEMY_TRACK_MODIFICATIONS: False
+
+development:
+  <<: *common
+  DEBUG: True
+  SQLALCHEMY_DATABASE_URI: "mysql+pymysql://{user}:{password}@clouda.mysql.database.azure.com:3306/clauda"
+
+production:
+  <<: *common
+  SQLALCHEMY_DATABASE_URI: "mysql+pymysql://{user}:{password}@clouda.mysql.database.azure.com:3306/clauda"
+
+ADDITIONAL_CONFIG:
+  MYSQL_ROOT_USER: "${MYSQL_ROOT_USER}"
+  MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
