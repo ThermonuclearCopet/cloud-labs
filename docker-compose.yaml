@@ -1,29 +1,24 @@
 version: "3.9"
 
 services:
-  db:
-    image: mysql:8.0
-    restart: unless-stopped
-    env_file: .env
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DB}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
-
   web:
-    build: .
+    image: tarastroshchuk/cloud-labs-web:latest
+    pull_policy: always
     restart: unless-stopped
     env_file: .env
-    depends_on:
-      - db
     ports:
-      - "5000:5000"
+      - "5000:5000" 
     command: python run.py
+    environment:
+      SQLALCHEMY_DATABASE_URI: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB}"
 
-volumes:
-  db_data:
+  watchtower:
+    image: containrrr/watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      --interval 60
+      --cleanup
+      --include-stopped
+      --revive-stopped
