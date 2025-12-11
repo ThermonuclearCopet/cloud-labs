@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     env_file: .env
     ports:
-      - "5000:5000" 
+      - "80:8080" 
     command: python run.py
     environment:
       SQLALCHEMY_DATABASE_URI: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DB}"
