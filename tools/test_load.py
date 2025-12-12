@@ -6,11 +6,11 @@ import requests
 
 TARGET_URL = os.getenv(
     "TARGET_URL",
-    "https://clouda-container-app--0000011.bluehill-65664009.norwayeast.azurecontainerapps.io/api/drivers",
+    "https://clouda-container-app.bluehill-65664009.norwayeast.azurecontainerapps.io/api/drivers",
 )
 
-TOTAL_REQUESTS = 4000
-CONCURRENCY = 80
+TOTAL_REQUESTS = 8000
+CONCURRENCY = 50
 
 
 def send_request(i: int):

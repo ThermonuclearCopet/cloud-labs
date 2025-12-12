@@ -158,7 +158,7 @@ def create_driver():
     return jsonify({"id": driver.id, "full_name": driver.full_name}), 201
 
 
-@api_bp.route("/drivers/<int:driver_id>", methods=["GET"])
+#@api_bp.route("/drivers/<int:driver_id>", methods=["GET"])
 def get_driver(driver_id: int):
     """
     Get a single driver by id.
