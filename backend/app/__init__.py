@@ -29,7 +29,7 @@ def create_app(config_class: type[Config] = Config) -> Flask:
             "description": "REST API",
         },
         "basePath": "/",
-        "schemes": ["https"],
+        "schemes": ["https", "http"],
     }
 
  
