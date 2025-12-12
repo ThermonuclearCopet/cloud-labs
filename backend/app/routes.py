@@ -263,7 +263,7 @@ def update_driver(driver_id: int):
     return jsonify({"message": "Driver updated"})
 
 
-
+@api_bp.route("/drivers/<int:driver_id>", methods=["DELETE"])
 def delete_driver(driver_id: int):
     """
     Delete a driver by id.
